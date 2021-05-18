@@ -1,6 +1,8 @@
 # Ionic Photo Gallery
 Galeria de fotos usando Vue.js + Ionic + Capacitor para salvar fotos no dispositivo (Web e Mobile).
 
+Pode ser acessado em produção aqui: http://ionic-photo-gallery.vercel.app/.
+
 ![image](https://user-images.githubusercontent.com/17749414/118579857-385b0080-b765-11eb-9dd1-9501edd881c4.png)
 
 Usa Ionic como framework front-end UI. E implementa APIs nativas web, com PWA, e Android e iOS para acesso a câmera e sistema de arquivos, usando Capacitor. 
