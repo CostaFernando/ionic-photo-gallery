@@ -1,4 +1,5 @@
 import { ref, onMounted, watch } from "vue";
+import { isPlatform } from "@ionic/vue";
 import {
 	Plugins,
 	CameraResultType,
@@ -29,12 +30,14 @@ export const usePhotoGallery = () => {
 		const photoList = await Storage.get({ key: PHOTO_STORAGE });
 		const photosInStorage = photoList.value ? JSON.parse(photoList.value) : [];
 
-		for (const photo of photosInStorage) {
-			const file = await Filesystem.readFile({
-				path: photo.filepath,
-				directory: FilesystemDirectory.Data,
-			});
-			photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
+		if (!isPlatform("hybrid")) {
+			for (const photo of photosInStorage) {
+				const file = await Filesystem.readFile({
+					path: photo.filepath,
+					directory: FilesystemDirectory.Data,
+				});
+				photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
+			}
 		}
 
 		photos.value = photosInStorage;
@@ -54,9 +57,18 @@ export const usePhotoGallery = () => {
 		photo: CameraPhoto,
 		fileName: string
 	): Promise<Photo> => {
-		const response = await fetch(photo.webPath!);
-		const blob = await response.blob();
-		const base64Data = (await convertBlobToBase64(blob)) as string;
+		let base64Data;
+
+		if (isPlatform("hybrid")) {
+			const file = await Filesystem.readFile({
+				path: photo.path!,
+			});
+			base64Data = file.data;
+		} else {
+			const response = await fetch(photo.webPath!);
+			const blob = await response.blob();
+			base64Data = (await convertBlobToBase64(blob)) as string;
+		}
 
 		const savedFile = await Filesystem.writeFile({
 			path: fileName,
@@ -64,13 +76,17 @@ export const usePhotoGallery = () => {
 			directory: FilesystemDirectory.Data,
 		});
 
-		console.log(fileName);
-		console.log(FilesystemDirectory.Data);
-
-		return {
-			filepath: fileName,
-			webviewPath: photo.webPath,
-		};
+		if (isPlatform("hybrid")) {
+			return {
+				filepath: savedFile.uri,
+				webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+			};
+		} else {
+			return {
+				filepath: fileName,
+				webviewPath: photo.webPath,
+			};
+		}
 	};
 
 	const takePhoto = async () => {
