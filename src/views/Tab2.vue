@@ -2,7 +2,7 @@
 	<ion-page>
 		<ion-header>
 			<ion-toolbar>
-				<ion-title>Photo Gallery</ion-title>
+				<ion-title>Galeria de fotos</ion-title>
 			</ion-toolbar>
 		</ion-header>
 		<ion-content :fullscreen="true">
@@ -67,10 +67,10 @@ export default {
 
 		const showActionSheet = async (photo: Photo) => {
 			const actionSheet = await actionSheetController.create({
-				header: "Photos",
+				header: "Fotos",
 				buttons: [
 					{
-						text: "Delete",
+						text: "Deletar",
 						role: "destructive",
 						icon: trash,
 						handler: () => {
@@ -78,7 +78,7 @@ export default {
 						},
 					},
 					{
-						text: "Cancel",
+						text: "Cancelar",
 						icon: close,
 						role: "cancel",
 					},
